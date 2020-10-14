@@ -1,5 +1,6 @@
-Keras==2.3.1
+keras==2.2.4
 numpy>=1.12.1
 nilearn>=0.3.0
 tables>=3.4.2
 nibabel>=2.1.0
+git+https://www.github.com/keras-team/keras-contrib.git#egg=keras_contrib
