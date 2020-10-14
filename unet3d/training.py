@@ -8,10 +8,13 @@ from keras.models import load_model
 from unet3d.metrics import (dice_coefficient, dice_coefficient_loss, dice_coef, dice_coef_loss,
                             weighted_dice_coefficient_loss, weighted_dice_coefficient)
 
-# K.set_image_dim_ordering('th')
-
+K.tensorflow_backend.set_image_dim_ordering('th')
+# K.tensorflow_backend.set_image_dim_ordering('tf')
+# K.set_image_data_format('channels_first')
 
 # learning rate schedule
+
+
 def step_decay(epoch, initial_lrate, drop, epochs_drop):
     return initial_lrate * math.pow(drop, math.floor((1+epoch)/float(epochs_drop)))
 
@@ -29,7 +32,8 @@ def get_callbacks(model_file, initial_learning_rate=0.0001, learning_rate_drop=0
         callbacks.append(ReduceLROnPlateau(factor=learning_rate_drop, patience=learning_rate_patience,
                                            verbose=verbosity))
     if early_stopping_patience:
-        callbacks.append(EarlyStopping(verbose=verbosity, patience=early_stopping_patience))
+        callbacks.append(EarlyStopping(verbose=verbosity,
+                                       patience=early_stopping_patience))
     return callbacks
 
 
