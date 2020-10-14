@@ -12,7 +12,10 @@ import SimpleITK as sitk
 import numpy as np
 from nipype.interfaces.ants import N4BiasFieldCorrection
 
-from brats.train import config
+# from brats.train import config
+
+config = dict()
+config["all_modalities"] = ["t1", "t1ce", "flair", "t2"]
 
 
 def append_basename(in_file, append):
