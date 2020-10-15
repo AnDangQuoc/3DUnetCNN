@@ -3,6 +3,7 @@ import copy
 from random import shuffle
 import itertools
 
+import tensorflow as tf
 import numpy as np
 
 from .utils import pickle_dump, pickle_load
@@ -115,7 +116,8 @@ def get_validation_split(data_file, training_file, validation_file, data_split=0
         print("Creating validation split...")
         nb_samples = data_file.root.data.shape[0]
         sample_list = list(range(nb_samples))
-        training_list, validation_list = split_list(sample_list, split=data_split)
+        training_list, validation_list = split_list(
+            sample_list, split=data_split)
         pickle_dump(training_list, training_file)
         pickle_dump(validation_list, validation_file)
         return training_list, validation_list
@@ -168,7 +170,8 @@ def get_number_of_patches(data_file, index_list, patch_shape=None, patch_overlap
         for index in index_list:
             x_list = list()
             y_list = list()
-            add_data(x_list, y_list, data_file, index, skip_blank=skip_blank, patch_shape=patch_shape)
+            add_data(x_list, y_list, data_file, index,
+                     skip_blank=skip_blank, patch_shape=patch_shape)
             if len(x_list) > 0:
                 count += 1
         return count
@@ -180,10 +183,13 @@ def create_patch_index_list(index_list, image_shape, patch_shape, patch_overlap,
     patch_index = list()
     for index in index_list:
         if patch_start_offset is not None:
-            random_start_offset = np.negative(get_random_nd_index(patch_start_offset))
-            patches = compute_patch_indices(image_shape, patch_shape, overlap=patch_overlap, start=random_start_offset)
+            random_start_offset = np.negative(
+                get_random_nd_index(patch_start_offset))
+            patches = compute_patch_indices(
+                image_shape, patch_shape, overlap=patch_overlap, start=random_start_offset)
         else:
-            patches = compute_patch_indices(image_shape, patch_shape, overlap=patch_overlap)
+            patches = compute_patch_indices(
+                image_shape, patch_shape, overlap=patch_overlap)
         patch_index.extend(itertools.product([index], patches))
     return patch_index
 
@@ -213,7 +219,8 @@ def add_data(x_list, y_list, data_file, index, augment=False, augment_flip=False
             affine = data_file.root.affine[index[0]]
         else:
             affine = data_file.root.affine[index]
-        data, truth = augment_data(data, truth, affine, flip=augment_flip, scale_deviation=augment_distortion_factor)
+        data, truth = augment_data(
+            data, truth, affine, flip=augment_flip, scale_deviation=augment_distortion_factor)
 
     if permute:
         if data.shape[-3] != data.shape[-2] or data.shape[-2] != data.shape[-1]:
@@ -246,7 +253,7 @@ def convert_data(x_list, y_list, n_labels=1, labels=None):
         y[y > 0] = 1
     elif n_labels > 1:
         y = get_multi_class_labels(y, n_labels=n_labels, labels=labels)
-    return x, y
+    return x, tf.cast(y, dtype=tf.float32)
 
 
 def get_multi_class_labels(data, n_labels, labels=None):
