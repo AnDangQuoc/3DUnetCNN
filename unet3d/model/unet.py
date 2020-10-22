@@ -57,11 +57,11 @@ def unet_model_3d(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning
     # add levels with up-convolution or up-sampling
     for layer_depth in range(depth-2, -1, -1):
         up_convolution = get_up_convolution(pool_size=pool_size, deconvolution=deconvolution,
-                                            n_filters=current_layer._keras_shape[1])(current_layer)
+                                            n_filters=current_layer.shape[1])(current_layer)
         concat = concatenate([up_convolution, levels[layer_depth][1]], axis=1)
-        current_layer = create_convolution_block(n_filters=levels[layer_depth][1]._keras_shape[1],
+        current_layer = create_convolution_block(n_filters=levels[layer_depth][1].shape[1],
                                                  input_layer=concat, batch_normalization=batch_normalization)
-        current_layer = create_convolution_block(n_filters=levels[layer_depth][1]._keras_shape[1],
+        current_layer = create_convolution_block(n_filters=levels[layer_depth][1].shape[1],
                                                  input_layer=current_layer,
                                                  batch_normalization=batch_normalization)
 
